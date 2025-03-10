@@ -10,24 +10,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  style-check:
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os:
+          - windows-latest
         toolchain:
-          - { compiler: gcc, version: 13 }
           - { compiler: intel, version: "2025.0" }
+          - { compiler: intel-classic, version: "2021.12" }
         python-version:
-          - "3.8"
           - "3.13"
         meson-version:
-          - "meson>1.4,<1.5"
-          - "meson>1.5,<1.6"
-          - "meson>1.6,<1.7"
-          - "meson>1.7,<1.8"
+          - "meson==1.4.2"
+          - "meson==1.5.0"
+          - "meson==1.5.1"
+          - "meson==1.5.2"
+          - "meson==1.6.0"
+          - "meson==1.6.1"
+          - "meson==1.7.0"
           - "https://github.com/mesonbuild/meson/archive/1412abc516e56b7d90f36fc75acb3e4b8c294e30.zip"
+          - "git+https://github.com/mesonbuild/meson.git"
+        include:
+          # baseline
+          - os: ubuntu-latest
+            toolchain: { compiler: intel, version: "2025.0" }
+            python-version: "3.13"
+            meson-version: "meson==1.7.0"
+          - os: windows-latest
+            toolchain: { compiler: gcc, version: 13 }
+            python-version: "3.13"
+            meson-version: "meson==1.7.0"
 
     steps:
       - uses: actions/checkout@v4
@@ -44,12 +58,18 @@ jobs:
           enable-cache: true
           python-version: ${{ matrix.python-version }}
 
-      - name: Compile and Run
+      - name: Install dependencies
         run: |
           uv venv
           uv pip install "${{ matrix.meson-version }}" meson-python ninja
+
+      - name: Build binaries
+        run: |
           uv run meson setup build
           cd build
-          uv run meson compile
-          ./main_c
-          ./main_f
+          uv run meson compile --verbose
+
+      - name: Test
+        run: |
+          uv sync --group test
+          uv run pytest
