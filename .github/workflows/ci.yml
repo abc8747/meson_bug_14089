@@ -31,6 +31,11 @@ jobs:
           - "meson==1.6.1"
           - "meson==1.7.0"
           - "https://github.com/mesonbuild/meson/archive/1412abc516e56b7d90f36fc75acb3e4b8c294e30.zip"
+          - "meson==1.7.1"
+          - "meson==1.7.2"
+          - "meson==1.8.0"
+          - "meson==1.8.1"
+          - "meson==1.8.2"
           - "git+https://github.com/mesonbuild/meson.git"
         include:
           # baseline
