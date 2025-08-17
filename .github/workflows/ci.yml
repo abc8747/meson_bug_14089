@@ -36,6 +36,9 @@ jobs:
           - "meson==1.8.0"
           - "meson==1.8.1"
           - "meson==1.8.2"
+          - "meson==1.8.3"
+          - "meson==1.9.0rc1"
+          - "meson==1.9.0rc2"
           - "git+https://github.com/mesonbuild/meson.git"
         include:
           # baseline
